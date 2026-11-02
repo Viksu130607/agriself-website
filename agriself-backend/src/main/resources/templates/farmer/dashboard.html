@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSelf | Farmer Field Dashboard & AI Advisory</title>
+    <link rel="stylesheet" th:href="@{/css/agriself.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <style>
+        .farmer-hero {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(19, 34, 56, 0.9) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: var(--radius-md);
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .ai-assistant-card {
+            background: linear-gradient(180deg, #132238 0%, #0d192a 100%);
+            border: 2px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.8rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            margin-top: 2rem;
+        }
+
+        .lang-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .lang-btn {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            padding: 0.4rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.84rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active,
+        .lang-btn:hover {
+            background: var(--brand-emerald-subtle);
+            border-color: var(--brand-emerald);
+            color: var(--brand-emerald);
+            font-weight: 600;
+        }
+
+        .topic-pills {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+            overflow-x: auto;
+            padding-bottom: 0.4rem;
+        }
+
+        .topic-btn {
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .topic-btn.active,
+        .topic-btn:hover {
+            background: var(--border-subtle);
+            color: var(--text-main);
+            border-color: var(--text-muted);
+        }
+
+        .advice-box {
+            background: var(--bg-surface-elevated);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        .field-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--brand-emerald);
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        .preset-box {
+            transition: all 0.2s ease;
+        }
+
+        .preset-box:hover,
+        .preset-box.active {
+            border-color: var(--brand-emerald) !important;
+            background: var(--brand-emerald-subtle) !important;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a th:href="@{/farmer/dashboard}" class="brand-container">
+            <div class="brand-logo">🌾</div>
+            <div class="brand-name">Agri<span>Self</span></div>
+        </a>
+        <div class="nav-actions">
+            <span class="role-badge badge-farmer">👨‍🌾 Farmer Field Mode</span>
+            <span th:text="${farmer != null ? farmer.fullName : 'Ramesh Patel'}"
+                style="font-size: 0.9rem; font-weight: 600;"></span>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Sign
+                    Out</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- Flash Messages -->
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <!-- Farmer Hero -->
+        <div class="farmer-hero">
+            <div>
+                <h1 style="font-size: 1.6rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+                    🌾 नमस्ते, <span th:text="${farmer != null ? farmer.fullName : 'किसान भाई'}"></span>!
+                </h1>
+                <p style="color: var(--text-secondary); margin-top: 0.4rem; font-size: 0.92rem;">
+                    📍 Farm Location: <strong style="color: var(--text-main);"
+                        th:text="${farmer != null ? farmer.location : 'Nashik, Maharashtra'}"></strong>
+                    | Active Field: <span class="field-badge"
+                        th:text="${primaryField != null ? primaryField.fieldName : 'Plot A - Wheat Belt'}"></span>
+                </p>
+            </div>
+            <div
+                style="background: var(--bg-surface-elevated); padding: 0.8rem 1.4rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); text-align: right;">
+                <div style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase;">Real-time Weather
+                </div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: var(--brand-emerald);">28°C ⛅</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Humidity 62% | Wind 11 km/h</div>
+            </div>
+        </div>
+
+        <!-- Quick Navigation Pills -->
+        <div style="display: flex; gap: 0.6rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <a href="#telemetry" class="btn btn-outline" style="font-size: 0.82rem; padding: 0.4rem 0.85rem;">📊 Soil &
+                Field Telemetry</a>
+            <a href="#ai-advisory" class="btn btn-outline" style="font-size: 0.82rem; padding: 0.4rem 0.85rem;">🤖 किसान
+                AI साथी (8 Languages)</a>
+            <a href="#crop-scanner" class="btn btn-outline" style="font-size: 0.82rem; padding: 0.4rem 0.85rem;">🔬 AI
+                Crop Disease Scanner</a>
+            <a href="#machinery-rental" class="btn btn-outline" style="font-size: 0.82rem; padding: 0.4rem 0.85rem;">🚜
+                Machinery Rental Fleet</a>
+            <a href="#crop-marketplace" class="btn btn-outline" style="font-size: 0.82rem; padding: 0.4rem 0.85rem;">💰
+                Sell Harvest (Marketplace)</a>
+        </div>
+
+        <!-- Section 1: Live Field Telemetry (Soil Moisture, pH, NPK, Nutrients) -->
+        <h2 id="telemetry" style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">📊 Real-time Field
+            Conditions & Sensors</h2>
+        <div class="metric-grid">
+            <div class="metric-card">
+                <span class="metric-label">Soil Moisture (मिट्टी में नमी)</span>
+                <div class="metric-value" style="color: #38bdf8;">
+                    <span id="soilMoistureVal"
+                        th:text="${primaryField != null ? primaryField.currentSoilMoisture : 43.8}">43.8</span>%
+                </div>
+                <span class="metric-sub" id="moistureStatus">💧 Status: Moderate (Needs Irrigation)</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Soil pH Level</span>
+                <div class="metric-value" style="color: var(--brand-emerald);">
+                    <span th:text="${primaryField != null ? primaryField.soilPh : 6.8}">6.8</span>
+                </div>
+                <span class="metric-sub">✅ Neutral - Highly Fertile</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Soil N-P-K (नाइट्रोजन-फास्फोरस-पोटाश)</span>
+                <div class="metric-value" style="font-size: 1.35rem; color: var(--accent-gold);">
+                    <span th:text="${primaryField != null ? primaryField.nitrogenPpm : 142}">142</span> /
+                    <span th:text="${primaryField != null ? primaryField.phosphorusPpm : 44}">44</span> /
+                    <span th:text="${primaryField != null ? primaryField.potassiumPpm : 195}">195</span>
+                </div>
+                <span class="metric-sub">Balanced Root Nutrition (ppm)</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Soil Type & Area</span>
+                <div class="metric-value" style="font-size: 1.3rem;">
+                    <span th:text="${primaryField != null ? primaryField.sizeInAcres : 12.5}">12.5</span> Acres
+                </div>
+                <span class="metric-sub"
+                    th:text="${primaryField != null ? primaryField.soilType : 'Black Cotton Soil'}">Black Cotton
+                    Soil</span>
+            </div>
+        </div>
+
+        <!-- Section 2: What is Needed for the Field (Water, Fertilizer, Tasks) -->
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <!-- Water & Irrigation Requirement -->
+            <div class="card">
+                <div class="card-title">
+                    <span>💧 Field Water Requirement</span>
+                    <span class="status-pill status-available">Automated Grid</span>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                    Calculated based on today's solar radiation, plant transpiration, and soil moisture level:
+                </p>
+                <div
+                    style="background: var(--bg-surface-elevated); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Today's Required Intake:</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #38bdf8;" id="waterNeeded">
+                        <span
+                            th:text="${primaryField != null ? primaryField.waterRequirementLiters : 1250.0}">1250</span>
+                        Liters / Acre
+                    </div>
+                    <div style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 0.3rem;">
+                        ⏰ Scheduled Drip: <strong id="scheduleText"
+                            th:text="${primaryField != null ? primaryField.irrigationSchedule : 'Tomorrow 06:00 AM'}"></strong>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" style="width: 100%;" onclick="triggerSmartIrrigation()">
+                    ⚡ Start Smart Micro-Drip Irrigation Now
+                </button>
+            </div>
+
+            <!-- Fertilizer & Nutrition Checklist -->
+            <div class="card">
+                <div class="card-title">
+                    <span>🌱 Fertilizer & Crop Nutrition</span>
+                    <span class="status-pill status-in-use">Next 3 Days</span>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+                    Current Crop: <strong style="color: var(--text-main);"
+                        th:text="${primaryField != null ? primaryField.currentCrop : 'Sharbati Wheat'}"></strong>
+                    (<span th:text="${primaryField != null ? primaryField.cropGrowthStage : 'Tillering'}"></span>)
+                </p>
+                <div
+                    style="background: var(--bg-surface-elevated); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Recommended Nutrition Dose:</div>
+                    <div style="font-size: 1.05rem; font-weight: 600; color: var(--accent-gold); margin-top: 0.2rem;"
+                        th:text="${primaryField != null ? primaryField.fertilizerRecommendation : 'Urea 25kg/acre + Zinc 5kg'}">
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--brand-emerald); margin-top: 0.4rem;">
+                        💡 Tip: Apply only in evening hours after drip watering.
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.5rem; font-size: 0.84rem; color: var(--text-secondary);">
+                    <span>🌿 Crop Health Rating:</span>
+                    <strong style="color: var(--brand-emerald);"
+                        th:text="${primaryField != null ? primaryField.overallCropHealth : 'Optimal'}"></strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: AI for Farmers in Indian Languages & Simple Everyday Words -->
+        <div class="ai-assistant-card">
+            <div
+                style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2
+                        style="font-size: 1.45rem; font-weight: 700; color: var(--brand-emerald); display: flex; align-items: center; gap: 0.5rem;">
+                        🤖 किसान एआई साथी (Indian Multi-Lingual Farmer AI)
+                    </h2>
+                    <p style="color: var(--text-secondary); font-size: 0.88rem; margin-top: 0.3rem;">
+                        सरल और आसान भाषा में फसलों की बीमारी, खाद, पानी और मौसम की सही सलाह
+                    </p>
+                </div>
+                <div
+                    style="background: var(--brand-emerald-subtle); border: 1px solid var(--brand-emerald); color: var(--brand-emerald); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.78rem; font-weight: 600;">
+                    🇮🇳 8 Regional Languages Supported
+                </div>
+            </div>
+
+            <!-- Language Selector Pills -->
+            <div style="margin-top: 1.2rem;">
+                <span
+                    style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">अपनी
+                    भाषा चुनें (Choose Language):</span>
+                <div class="lang-pills">
+                    <button type="button" class="lang-btn active" onclick="setLanguage('hi', this)">🇮🇳 हिंदी
+                        (Hindi)</button>
+                    <button type="button" class="lang-btn" onclick="setLanguage('mr', this)">🇮🇳 मराठी
+                        (Marathi)</button>
+                    <button type="button" class="lang-btn" onclick="setLanguage('pa', this)">🇮🇳 ਪੰਜਾਬੀ
+                        (Punjabi)</button>
+                    <button type="button" class="lang-btn" onclick="setLanguage('gu', this)">🇮🇳 ગુજરાતી
+                        (Gujarati)</button>
+                    <button type="button" class="lang-btn" onclick="setLanguage('te', this)">🇮🇳 తెలుగు
+                        (Telugu)</button>
+                    <button type="button" class="lang-btn" onclick="setLanguage('ta', this)">🇮🇳 தமிழ் (Tamil)</button>
+                    <button type="button" class="lang-btn" onclick="setLanguage('bn', this)">🇮🇳 বাংলা
+                        (Bengali)</button>
+                    <button type="button" class="lang-btn" onclick="setLanguage('en', this)">🇮🇳 English (Farmer
+                        Words)</button>
+                </div>
+            </div>
+
+            <!-- Topic Buttons -->
+            <div class="topic-pills">
+                <button type="button" class="topic-btn active" onclick="setTopic('PEST', this)">🐛 कीट व बीमारी की
+                    रोकथाम (Pest & Disease)</button>
+                <button type="button" class="topic-btn" onclick="setTopic('WATER', this)">💧 सही पानी व सिंचाई (Water &
+                    Irrigation)</button>
+                <button type="button" class="topic-btn" onclick="setTopic('FERTILIZER', this)">🌱 खाद व यूरिया की मात्रा
+                    (Fertilizer Dosing)</button>
+                <button type="button" class="topic-btn" onclick="setTopic('WEATHER', this)">🌦️ मौसम व बारिश की चेतावनी
+                    (Weather Alert)</button>
+            </div>
+
+            <!-- Custom Question Box -->
+            <div style="display: flex; gap: 0.8rem; margin-bottom: 1.2rem;">
+                <input type="text" id="farmerQuestionInput" class="form-input"
+                    placeholder="या अपना सवाल यहाँ लिखें (जैसे: पत्तियों पर पीलापन आ रहा है क्या करूँ?)..." />
+                <button type="button" class="btn btn-primary" onclick="askCustomQuestion()"
+                    style="white-space: nowrap;">
+                    पूछें / Ask AI ➔
+                </button>
+            </div>
+
+            <!-- Response Display Card -->
+            <div class="advice-box" id="adviceContainer">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                    <h3 id="adviceTitle" style="font-size: 1.15rem; font-weight: 700; color: var(--text-main);"
+                        th:text="${initialAdvice.warningTitle}">
+                        ⚠️ सावधान: गेहूं में कीट एवं बीमारी की चेतावनी!
+                    </h3>
+                    <span id="adviceBadge" class="status-pill status-maintenance"
+                        th:text="${initialAdvice.warningBadge}">URGENT</span>
+                </div>
+
+                <p id="adviceBody"
+                    style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1.2rem; line-height: 1.6;"
+                    th:text="${initialAdvice.advice}">
+                    किसान भाई, पत्तियों पर काले या पीले धब्बे और सुंडी दिखने पर घबराएं नहीं। तुरंत सरल देसी या सही
+                    छिड़काव करें ताकि फसल सुरक्षित रहे।
+                </p>
+
+                <h4
+                    style="font-size: 0.88rem; text-transform: uppercase; color: var(--brand-emerald); margin-bottom: 0.6rem; letter-spacing: 0.5px;">
+                    📋 आसान कदम (Simple Action Steps):
+                </h4>
+                <div id="actionStepsList">
+                    <div class="step-item" th:each="step : ${initialAdvice.simpleActionSteps}">
+                        <span th:text="${step}"></span>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 1.2rem; padding: 0.8rem 1rem; background: rgba(6, 218, 147, 0.1); border-left: 3px solid var(--brand-emerald); border-radius: 4px;">
+                    <div style="font-size: 0.82rem; font-weight: 600; color: var(--brand-emerald);">🌿 देसी व जैविक उपाय
+                        (Organic Solution):</div>
+                    <div id="organicSolution" style="font-size: 0.88rem; color: var(--text-main); margin-top: 0.2rem;"
+                        th:text="${initialAdvice.organicSolution}">
+                        देसी नुस्खा: 10 लीटर गोमूत्र + 2 किलो नीम की पत्ती का काढ़ा बनाकर 100 लीटर पानी में मिलाकर
+                        स्प्रे करें।
+                    </div>
+                </div>
+
+                <div style="margin-top: 0.8rem; font-size: 0.82rem; color: var(--accent-gold);" id="weatherNote"
+                    th:text="${initialAdvice.weatherNote}">
+                    🌦️ अगले 48 घंटे में हवा में नमी रहेगी, इसलिए फफूंद (Fungus) की रोकथाम पहले से करें।
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'hi';
+        let currentTopic = 'PEST';
+        const fieldId = /*[[${primaryField != null ? primaryField.id : 1}]]*/ 1;
+
+        function setLanguage(lang, btn) {
+            currentLanguage = lang;
+            document.querySelectorAll('.lang-pills .lang-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            fetchAdvice();
+        }
+
+        function setTopic(topic, btn) {
+            currentTopic = topic;
+            document.querySelectorAll('.topic-pills .topic-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            fetchAdvice();
+        }
+
+        function askCustomQuestion() {
+            const question = document.getElementById('farmerQuestionInput').value;
+            if (!question || question.trim() === '') return;
+            fetchAdvice(question);
+        }
+
+        function fetchAdvice(questionText = null) {
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+            const payload = {
+                language: currentLanguage,
+                topic: currentTopic,
+                cropName: "गेहूं / फसल",
+                question: questionText || ""
+            };
+
+            fetch('/farmer/api/ai-advice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify(payload)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    renderAdvice(data);
+                })
+                .catch(err => {
+                    console.error("AI Advice fetch error:", err);
+                });
+        }
+
+        function renderAdvice(data) {
+            document.getElementById('adviceTitle').innerText = data.warningTitle || "कृषि सलाह";
+            document.getElementById('adviceBadge').innerText = data.warningBadge || "ADVISORY";
+            document.getElementById('adviceBody').innerText = data.advice || "";
+            document.getElementById('organicSolution').innerText = data.organicSolution || "";
+            document.getElementById('weatherNote').innerText = data.weatherNote ? "🌦️ " + data.weatherNote : "";
+
+            const stepsContainer = document.getElementById('actionStepsList');
+            stepsContainer.innerHTML = '';
+            if (data.simpleActionSteps && data.simpleActionSteps.length > 0) {
+                data.simpleActionSteps.forEach(step => {
+                    const div = document.createElement('div');
+                    div.className = 'step-item';
+                    div.innerHTML = `<span>${step}</span>`;
+                    stepsContainer.appendChild(div);
+                });
+            }
+        }
+
+        function triggerSmartIrrigation() {
+            const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+            fetch(`/farmer/api/toggle-irrigation/${fieldId}`, {
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken
+                }
+            })
+                .then(response => response.json())
+                .then(updatedField => {
+                    document.getElementById('soilMoistureVal').innerText = updatedField.currentSoilMoisture.toFixed(1);
+                    document.getElementById('waterNeeded').innerHTML = `${updatedField.waterRequirementLiters.toFixed(0)} Liters / Acre`;
+                    document.getElementById('scheduleText').innerText = updatedField.irrigationSchedule;
+                    document.getElementById('moistureStatus').innerText = "💧 Status: Drip Flowing Actively (Hydrating Soil)";
+                    alert("✅ Smart Micro-Drip Irrigation started! Moisture sensor telemetry updated.");
+                })
+                .catch(err => console.error("Irrigation trigger error:", err));
+        }
+    </script>
+
+</body>
+
+</html>

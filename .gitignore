@@ -1,0 +1,25 @@
+
+# Python components
+*.py
+__pycache__/
+.venv/
+venv/
+
+# Java build files
+agriself-backend/target/
+
+# Sensitive configuration
+.env
+*.env
+application-secret.properties
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Local databases
+*.mv.db
+*.trace.db

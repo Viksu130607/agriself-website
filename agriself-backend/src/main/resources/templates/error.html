@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSelf | Secure Platform Notice</title>
+    <link rel="stylesheet" th:href="@{/css/agriself.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .error-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            background: var(--bg-primary);
+        }
+        .error-card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 2.2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="error-wrapper">
+    <div class="error-card">
+        <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">🛡️</div>
+        <h1 style="font-size: 1.5rem; font-weight: 700;">Notice (<span th:text="${statusCode}">500</span>)</h1>
+        <p style="color: var(--text-secondary); margin: 0.8rem 0 1.5rem 0; font-size: 0.92rem;" th:text="${errorMessage}">
+            An unexpected error occurred.
+        </p>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+            Stack traces and server internal details are hidden for application security.
+        </p>
+        <a th:href="@{/}" class="btn btn-primary">Return to Homepage ➔</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSelf | Create Account</title>
+    <link rel="stylesheet" th:href="@{/css/agriself.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 1rem;
+            background: radial-gradient(circle at 50% 20%, #152740 0%, #0b131f 70%);
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 2.2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 1.8rem;
+        }
+        .auth-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 0.6rem;
+        }
+        .text-danger {
+            color: var(--accent-crimson);
+            font-size: 0.78rem;
+            margin-top: 0.3rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">🌾</div>
+            <h1 style="font-size: 1.45rem; font-weight: 700;">Join Agri<span>Self</span></h1>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">Register for Farmer Field Access or Commodity Trade</p>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <form th:action="@{/register}" th:object="${registerForm}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <div class="form-group">
+                <label class="form-label" for="fullName">Full Name</label>
+                <input type="text" id="fullName" th:field="*{fullName}" class="form-input" placeholder="e.g. Ramesh Patel" required>
+                <span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <input type="email" id="email" th:field="*{email}" class="form-input" placeholder="name@domain.com" required>
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="phoneNumber">Mobile Number (10 Digits)</label>
+                <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" class="form-input" placeholder="9876543210" required maxlength="10">
+                <span th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password (Minimum 8 Characters)</label>
+                <input type="password" id="password" th:field="*{password}" class="form-input" placeholder="••••••••" required minlength="8">
+                <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="role">Register As (Role Selection)</label>
+                <select id="role" th:field="*{role}" class="form-select" required>
+                    <option value="ROLE_FARMER">👨‍🌾 Farmer (Field Management, Sensors & AI Advice)</option>
+                    <option value="ROLE_BUSINESSMAN">💼 Businessman / Consumer (Marketplace, Mandi Prices & Crops)</option>
+                </select>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">
+                    ℹ️ Note: Administrator access is granted strictly through company database administration.
+                </p>
+                <span th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="location">Location / District</label>
+                <input type="text" id="location" th:field="*{location}" class="form-input" placeholder="e.g. Nashik, Maharashtra">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem; margin-top: 0.5rem;">
+                Create Account ➔
+            </button>
+        </form>
+
+        <p style="text-align: center; margin-top: 1.2rem; font-size: 0.88rem; color: var(--text-secondary);">
+            Already have an account? <a th:href="@{/login}" style="color: var(--brand-emerald); text-decoration: none; font-weight: 600;">Sign In</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

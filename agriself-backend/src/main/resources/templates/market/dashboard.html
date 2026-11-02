@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSelf | Mandi Rates & Crop Marketplace</title>
+    <link rel="stylesheet" th:href="@{/css/agriself.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .trend-rising {
+            color: #34d399;
+            font-weight: 600;
+        }
+        .trend-falling {
+            color: #f87171;
+            font-weight: 600;
+        }
+        .trend-stable {
+            color: #94a3b8;
+            font-weight: 600;
+        }
+        /* Modal styling */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: var(--shadow-card);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <a th:href="@{/market/dashboard}" class="brand-container">
+        <div class="brand-logo">💼</div>
+        <div class="brand-name">Agri<span>Self</span> Market</div>
+    </a>
+    <div class="nav-actions">
+        <span class="role-badge badge-businessman">💼 Businessman / Consumer</span>
+        <span th:text="${businessman != null ? businessman.fullName : 'Vikram Singhania'}" style="font-size: 0.9rem; font-weight: 600;"></span>
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Sign Out</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- Flash message alerts -->
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <!-- Hero Header -->
+    <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(19, 34, 56, 0.9) 100%); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-md); padding: 1.8rem; margin-bottom: 2rem;">
+        <h1 style="font-size: 1.6rem; font-weight: 700;">
+            📈 Live Commodity Mandi Rates & Farm-Direct Sales
+        </h1>
+        <p style="color: var(--text-secondary); margin-top: 0.4rem; font-size: 0.92rem;">
+            Real-time APMC price benchmarks across Indian states and direct purchasing access to verified high-yield crops.
+        </p>
+    </div>
+
+    <!-- Section 1: Live Mandi Rates Across India -->
+    <div class="card">
+        <div class="card-title">
+            <span>🏛️ Official Mandi Benchmarks Across Indian States (₹ / Quintal)</span>
+            <span class="status-pill status-available">Live Feeds</span>
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Commodity & Variety</th>
+                        <th>State</th>
+                        <th>APMC Mandi</th>
+                        <th>Min Price</th>
+                        <th>Max Price</th>
+                        <th>Modal Benchmark</th>
+                        <th>Daily Trend</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="price : ${mandiPrices}">
+                        <td><strong th:text="${price.commodity}">Wheat</strong></td>
+                        <td th:text="${price.state}">Madhya Pradesh</td>
+                        <td th:text="${price.mandiName}">Sehore APMC</td>
+                        <td th:text="'₹' + ${#numbers.formatDecimal(price.minPricePerQuintal, 1, 2)}">₹2,450.00</td>
+                        <td th:text="'₹' + ${#numbers.formatDecimal(price.maxPricePerQuintal, 1, 2)}">₹2,850.00</td>
+                        <td>
+                            <strong style="color: var(--brand-emerald); font-size: 0.95rem;" th:text="'₹' + ${#numbers.formatDecimal(price.modalPricePerQuintal, 1, 2)}">₹2,720.00</strong>
+                        </td>
+                        <td>
+                            <span th:if="${price.priceTrend == 'RISING'}" class="trend-rising">
+                                📈 +<span th:text="${price.percentageChange}"></span>%
+                            </span>
+                            <span th:if="${price.priceTrend == 'FALLING'}" class="trend-falling">
+                                📉 <span th:text="${price.percentageChange}"></span>%
+                            </span>
+                            <span th:if="${price.priceTrend == 'STABLE'}" class="trend-stable">
+                                ➖ Stable
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section 2: Crops on Sale Directly from Farmers (Quantity, Grade, Price, Direct Buy) -->
+    <div class="card" style="margin-top: 2rem;">
+        <div class="card-title">
+            <span>🌾 Verified Crops for Sale (Direct Farm Gate Purchasing)</span>
+            <span class="status-pill status-in-use">Zero Middlemen</span>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.2rem;">
+            Purchase verified agricultural produce directly with certified moisture reports and fair farm-gate pricing.
+        </p>
+
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Crop & Variety</th>
+                        <th>Available Stock</th>
+                        <th>Quality Grade</th>
+                        <th>Asking Price / Qtl</th>
+                        <th>Farm Location</th>
+                        <th>Quality Specifications</th>
+                        <th>Direct Order</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="listing : ${cropListings}">
+                        <td>
+                            <strong style="font-size: 0.95rem;" th:text="${listing.cropName}">Sharbati Wheat</strong>
+                            <div style="font-size: 0.78rem; color: var(--text-muted);" th:text="${listing.variety}">C-306</div>
+                        </td>
+                        <td>
+                            <strong style="color: #38bdf8;" th:text="${listing.quantityQuintals} + ' Qtl'">150 Qtl</strong>
+                        </td>
+                        <td>
+                            <span class="status-pill status-available" th:text="${listing.qualityGrade}">Grade A+</span>
+                        </td>
+                        <td>
+                            <strong style="color: var(--accent-gold); font-size: 1.05rem;" th:text="'₹' + ${#numbers.formatDecimal(listing.pricePerQuintal, 1, 2)}">₹2,750</strong>
+                        </td>
+                        <td th:text="${listing.farmLocation}">Dindori, Nashik</td>
+                        <td style="font-size: 0.82rem; color: var(--text-secondary);" th:text="${listing.qualityNotes}">11% Moisture</td>
+                        <td>
+                            <button type="button" class="btn btn-primary" style="padding: 0.4rem 0.9rem; font-size: 0.82rem;"
+                                    th:data-id="${listing.id}"
+                                    th:data-crop="${listing.cropName}"
+                                    th:data-max="${listing.quantityQuintals}"
+                                    th:data-price="${listing.pricePerQuintal}"
+                                    onclick="openOrderModal(this.getAttribute('data-id'), this.getAttribute('data-crop'), this.getAttribute('data-max'), this.getAttribute('data-price'))">
+                                🛒 Buy Crop
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Order Modal with CSRF -->
+<div class="modal-overlay" id="orderModal">
+    <div class="modal-card">
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.4rem;">Confirm Crop Purchase</h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.2rem;" id="modalCropName">Commodity: Wheat</p>
+
+        <form th:action="@{/market/order}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <input type="hidden" id="modalListingId" name="listingId" />
+
+            <div class="form-group">
+                <label class="form-label" for="orderQuantity">Quantity to Purchase (in Quintals)</label>
+                <input type="number" id="orderQuantity" name="orderQuantity" class="form-input" min="1" step="0.5" required oninput="calculateTotal()" />
+                <span style="font-size: 0.78rem; color: var(--text-muted);" id="modalMaxNotice">Max available: 150 Qtl</span>
+            </div>
+
+            <div style="background: var(--bg-surface-elevated); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.2rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.4rem;">
+                    <span style="color: var(--text-muted);">Rate per Quintal:</span>
+                    <strong id="modalRateDisplay">₹2,750</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 1.05rem; font-weight: 700;">
+                    <span style="color: var(--text-main);">Total Order Value:</span>
+                    <strong style="color: var(--brand-emerald);" id="modalTotalDisplay">₹0.00</strong>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 0.8rem;">
+                <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeOrderModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="flex: 1;">Confirm Purchase ➔</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let currentPricePerQtl = 0;
+
+    function openOrderModal(id, cropName, maxQty, price) {
+        document.getElementById('modalListingId').value = id;
+        document.getElementById('modalCropName').innerText = "Purchasing: " + cropName;
+        document.getElementById('modalMaxNotice').innerText = "Max stock available: " + maxQty + " Quintals";
+        document.getElementById('orderQuantity').max = maxQty;
+        document.getElementById('orderQuantity').value = Math.min(10, maxQty);
+        currentPricePerQtl = parseFloat(price);
+        document.getElementById('modalRateDisplay').innerText = "₹" + currentPricePerQtl.toLocaleString('en-IN');
+        calculateTotal();
+        document.getElementById('orderModal').classList.add('active');
+    }
+
+    function closeOrderModal() {
+        document.getElementById('orderModal').classList.remove('active');
+    }
+
+    function calculateTotal() {
+        const qty = parseFloat(document.getElementById('orderQuantity').value) || 0;
+        const total = qty * currentPricePerQtl;
+        document.getElementById('modalTotalDisplay').innerText = "₹" + total.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+</script>
+
+</body>
+</html>

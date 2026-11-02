@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGRISELF | Autonomous AI Micro-Farming & Precision Agritech System</title>
+    <meta name="description" content="AgriSelf is an end-to-end, AI-powered autonomous farming platform designed to convert agricultural land into self-managing, high-yield ecosystems.">
+    <link rel="stylesheet" th:href="@{/css/agriself.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <style>
+        .hero-section {
+            padding: 5rem 1.5rem 4rem;
+            text-align: center;
+            background: radial-gradient(circle at 50% 15%, rgba(16, 185, 129, 0.18) 0%, rgba(11, 19, 31, 0.98) 75%);
+            border-bottom: 1px solid var(--border-subtle);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: var(--brand-emerald);
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3.2rem;
+            font-weight: 900;
+            line-height: 1.15;
+            max-width: 950px;
+            margin: 0 auto 1.2rem;
+            letter-spacing: -1px;
+        }
+        .hero-title span {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 780px;
+            margin: 0 auto 2.4rem;
+            line-height: 1.65;
+        }
+        .hero-cta-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .pitch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin: -2.5rem auto 4rem;
+            position: relative;
+            z-index: 10;
+        }
+        .pitch-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 1.8rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .pitch-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--brand-emerald);
+        }
+        .pitch-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: var(--brand-emerald);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        .pitch-label {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.3rem;
+        }
+        .pitch-desc {
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .section-tag {
+            font-size: 0.8rem;
+            color: var(--brand-emerald);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+        }
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+        .portals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4.5rem;
+        }
+        .portal-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 2.2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+        }
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+        }
+        .portal-farmer::before { background: linear-gradient(90deg, #10b981, #059669); }
+        .portal-buyer::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
+        .portal-admin::before { background: linear-gradient(90deg, #38bdf8, #0284c7); }
+
+        .portal-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.2rem;
+        }
+        .portal-features-list {
+            list-style: none;
+            margin: 1.2rem 0 2rem;
+        }
+        .portal-features-list li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .scanner-card {
+            background: linear-gradient(180deg, #132238 0%, #0d192a 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            margin-bottom: 4.5rem;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        .scanner-presets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .scanner-preset-item {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .scanner-preset-item:hover, .scanner-preset-item.active {
+            border-color: var(--brand-emerald);
+            background: var(--brand-emerald-subtle);
+            transform: translateY(-2px);
+        }
+        .scanner-preset-img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .diagnostic-result-panel {
+            background: var(--bg-surface-elevated);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: var(--radius-md);
+            padding: 1.8rem;
+            margin-top: 1.5rem;
+        }
+        .demo-roles-banner {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(56, 189, 248, 0.1) 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        .footer {
+            border-top: 1px solid var(--border-subtle);
+            padding: 3rem 1.5rem 2rem;
+            background: #080e18;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.2rem; }
+            .hero-section { padding: 3rem 1rem 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Main Top Navigation -->
+<nav class="navbar">
+    <a th:href="@{/}" class="brand-container">
+        <div class="brand-logo">🌾</div>
+        <div class="brand-name">Agri<span>Self</span></div>
+    </a>
+    <div class="nav-actions">
+        <a href="#overview" class="btn btn-outline" style="border: none; font-size: 0.85rem;">Platform</a>
+        <a href="#mandi-rates" class="btn btn-outline" style="border: none; font-size: 0.85rem;">Mandi Rates</a>
+        <a href="#ai-scanner" class="btn btn-outline" style="border: none; font-size: 0.85rem;">Leaf AI</a>
+        <a href="#portals" class="btn btn-outline" style="border: none; font-size: 0.85rem;">Portals</a>
+
+        <div th:if="${authenticatedUser != null}" style="display: flex; align-items: center; gap: 0.8rem;">
+            <a th:if="${isFarmer}" th:href="@{/farmer/dashboard}" class="btn btn-primary" style="padding: 0.45rem 1rem;">
+                👨‍🌾 My Farm Dashboard
+            </a>
+            <a th:if="${isBusiness}" th:href="@{/market/dashboard}" class="btn btn-primary" style="padding: 0.45rem 1rem; background: var(--accent-gold); color: #0b131f;">
+                💼 Market Dashboard
+            </a>
+            <a th:if="${isAdmin}" th:href="@{/admin/dashboard}" class="btn btn-primary" style="padding: 0.45rem 1rem; background: var(--accent-blue); color: #0b131f;">
+                🛡️ Fleet Console
+            </a>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Sign Out</button>
+            </form>
+        </div>
+
+        <div th:if="${authenticatedUser == null}" style="display: flex; align-items: center; gap: 0.8rem;">
+            <a th:href="@{/login}" class="btn btn-outline" style="padding: 0.45rem 1rem;">Sign In</a>
+            <a th:href="@{/register}" class="btn btn-primary" style="padding: 0.45rem 1.1rem;">Get Started</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<header class="hero-section" id="overview">
+    <div class="hero-badge">
+        <span>🌱 AUTONOMOUS AI MICRO-FARMING & PRECISION AGRITECH</span>
+    </div>
+    <h1 class="hero-title">
+        The Autonomous Operating System for <span>Precision Agritech</span>
+    </h1>
+    <p class="hero-subtitle">
+        AgriSelf integrates real-time IoT soil telemetry, multi-lingual agricultural AI in 8 Indian regional languages, direct farm-to-business APMC Mandi commodity sales, and autonomous machinery fleets into one unified ecosystem.
+    </p>
+    <div class="hero-cta-group">
+        <a th:href="@{/login}" class="btn btn-primary" style="padding: 0.8rem 1.8rem; font-size: 1rem;">
+            🚀 Enter Platform & Portals ➔
+        </a>
+        <a href="#ai-scanner" class="btn btn-outline" style="padding: 0.8rem 1.6rem; font-size: 1rem;">
+            🔬 Test Live AI Leaf Scanner
+        </a>
+        <a href="#mandi-rates" class="btn btn-outline" style="padding: 0.8rem 1.6rem; font-size: 1rem;">
+            📈 View Live APMC Mandi Rates
+        </a>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Executive Pitch Key Performance Metrics -->
+    <section class="pitch-grid">
+        <div class="pitch-card">
+            <div class="pitch-val">+35%</div>
+            <div class="pitch-label">Average Yield Increase</div>
+            <p class="pitch-desc">Sensor-guided micro-nutrient dosing and computer vision disease detection.</p>
+        </div>
+        <div class="pitch-card">
+            <div class="pitch-val" style="color: #38bdf8;">-40%</div>
+            <div class="pitch-label">Water & Chemical Reduction</div>
+            <p class="pitch-desc">Sub-surface precision micro-drip tailored to real-time soil intake rates.</p>
+        </div>
+        <div class="pitch-card">
+            <div class="pitch-val" style="color: #f59e0b;">70%</div>
+            <div class="pitch-label">Manual Labor Saved</div>
+            <p class="pitch-desc">Automated smart valves, micro-injectors, and drone aerial spray surveys.</p>
+        </div>
+        <div class="pitch-card">
+            <div class="pitch-val" style="color: #a7f3d0;">1.2 Yrs</div>
+            <div class="pitch-label">Payback Period</div>
+            <p class="pitch-desc">High-ROI smart machinery equipment + transparent marketplace trading.</p>
+        </div>
+    </section>
+
+    <!-- Interactive AI Crop Disease Scanner Showcase -->
+    <section class="scanner-card" id="ai-scanner">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <span class="section-tag">🔬 LIVE COMPUTER VISION & AGRONOMIC DIAGNOSIS</span>
+                <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin-top: 0.2rem;">
+                    Instant AI Foliage Pathogen & Nutrient Classifier
+                </h2>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.4rem;">
+                    Click any sample agricultural leaf below to run the native Java Agronomic Intelligence Engine:
+                </p>
+            </div>
+            <span class="status-pill status-available" style="padding: 0.4rem 0.9rem;">
+                🟢 8 Pathogen Classes Active
+            </span>
+        </div>
+
+        <!-- 5 Sample Leaf Presets -->
+        <div class="scanner-presets-grid">
+            <div class="scanner-preset-item active" onclick="selectPreset('Tomato', 'Early Blight (Alternaria solani)', 'Concentric dark brown rings with chlorotic halo on foliage', '/sample_data/sample_early_blight_leaf.png', this)">
+                <img th:src="@{/sample_data/sample_early_blight_leaf.png}" alt="Tomato Early Blight" class="scanner-preset-img">
+                <div style="font-weight: 700; font-size: 0.88rem;">Tomato</div>
+                <div style="font-size: 0.76rem; color: var(--accent-gold);">Early Blight</div>
+            </div>
+            <div class="scanner-preset-item" onclick="selectPreset('Potato', 'Late Blight (Phytophthora infestans)', 'Water-soaked lesions on leaf tips turning purplish black with mildew rim', '/sample_data/sample_late_blight_leaf.png', this)">
+                <img th:src="@{/sample_data/sample_late_blight_leaf.png}" alt="Potato Late Blight" class="scanner-preset-img">
+                <div style="font-weight: 700; font-size: 0.88rem;">Potato</div>
+                <div style="font-size: 0.76rem; color: var(--accent-crimson);">Late Blight</div>
+            </div>
+            <div class="scanner-preset-item" onclick="selectPreset('Cucurbits', 'Powdery Mildew (Erysiphe cichoracearum)', 'Talcum powder-like white fungal coating spreading over upper leaf surfaces', '/sample_data/sample_powdery_mildew_leaf.png', this)">
+                <img th:src="@{/sample_data/sample_powdery_mildew_leaf.png}" alt="Powdery Mildew" class="scanner-preset-img">
+                <div style="font-weight: 700; font-size: 0.88rem;">Cucumber</div>
+                <div style="font-size: 0.76rem; color: #cbd5e1;">Powdery Mildew</div>
+            </div>
+            <div class="scanner-preset-item" onclick="selectPreset('Wheat', 'Nitrogen Deficiency', 'Interveinal yellowing chlorosis on older leaves, stunted shoot elongation', '/sample_data/sample_nitrogen_deficiency_leaf.png', this)">
+                <img th:src="@{/sample_data/sample_nitrogen_deficiency_leaf.png}" alt="Nitrogen Deficiency" class="scanner-preset-img">
+                <div style="font-weight: 700; font-size: 0.88rem;">Wheat</div>
+                <div style="font-size: 0.76rem; color: var(--accent-gold);">Nitrogen Deficit</div>
+            </div>
+            <div class="scanner-preset-item" onclick="selectPreset('Rice', 'Healthy Foliage', 'Vibrant green leaves, uniform chlorophyll index, no lesion or blight spots', '/sample_data/sample_healthy_leaf.png', this)">
+                <img th:src="@{/sample_data/sample_healthy_leaf.png}" alt="Healthy Leaf" class="scanner-preset-img">
+                <div style="font-weight: 700; font-size: 0.88rem;">Basmati Rice</div>
+                <div style="font-size: 0.76rem; color: var(--brand-emerald);">Healthy Vigour</div>
+            </div>
+        </div>
+
+        <!-- Diagnostic Output Panel -->
+        <div class="diagnostic-result-panel" id="diagResultContainer">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.8rem;">
+                    <img id="diagResultImg" th:src="@{/sample_data/sample_early_blight_leaf.png}" alt="Diagnosed Leaf" style="width: 54px; height: 54px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-subtle);">
+                    <div>
+                        <h3 id="diagResultTitle" style="font-size: 1.25rem; font-weight: 700; color: var(--brand-emerald);">
+                            Early Blight (Alternaria solani)
+                        </h3>
+                        <div id="diagResultCrop" style="font-size: 0.84rem; color: var(--text-secondary);">
+                            Crop: Tomato / Solanaceae | Confidence: <strong id="diagConfidence" style="color: var(--brand-emerald);">96.8%</strong>
+                        </div>
+                    </div>
+                </div>
+                <span id="diagSeverityBadge" class="status-pill status-maintenance" style="font-size: 0.82rem; padding: 0.35rem 0.85rem;">
+                    HIGH SEVERITY
+                </span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; margin-top: 1.2rem;">
+                <div style="background: var(--bg-surface); padding: 1.2rem; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-gold);">
+                    <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--accent-gold); font-weight: 700; margin-bottom: 0.3rem;">
+                        ⚡ Immediate Agronomic Action
+                    </div>
+                    <p id="diagImmediateAction" style="font-size: 0.88rem; color: var(--text-main); line-height: 1.5;">
+                        Prune affected lower leaves displaying concentric target-board rings. Disinfect shears between rows.
+                    </p>
+                </div>
+                <div style="background: var(--bg-surface); padding: 1.2rem; border-radius: var(--radius-sm); border-left: 3px solid var(--brand-emerald);">
+                    <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--brand-emerald); font-weight: 700; margin-bottom: 0.3rem;">
+                        🌿 Organic Biological Solution
+                    </div>
+                    <p id="diagBioSolution" style="font-size: 0.88rem; color: var(--text-main); line-height: 1.5;">
+                        Bio-fungicide formulation of Bacillus subtilis (3g/L) mixed with organic soap adhesive.
+                    </p>
+                </div>
+                <div style="background: var(--bg-surface); padding: 1.2rem; border-radius: var(--radius-sm); border-left: 3px solid #38bdf8;">
+                    <div style="font-size: 0.78rem; text-transform: uppercase; color: #38bdf8; font-weight: 700; margin-bottom: 0.3rem;">
+                        💧 Smart Valve Irrigation Protocol
+                    </div>
+                    <p id="diagValveProtocol" style="font-size: 0.88rem; color: var(--text-main); line-height: 1.5;">
+                        Restrict overhead watering. Shift purely to sub-surface drip to keep canopy dry.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The 3 Core Platform Portals -->
+    <section id="portals">
+        <div class="section-header">
+            <span class="section-tag">THREE SPECIALIZED WORKFLOWS</span>
+            <h2 class="section-title">Built for Farmers, Buyers & Enterprise Ag-Fleets</h2>
+        </div>
+
+        <div class="portals-grid">
+            <!-- Portal 1: Farmer Field Mode -->
+            <div class="portal-card portal-farmer">
+                <div>
+                    <div class="portal-icon" style="background: rgba(16, 185, 129, 0.2); color: var(--brand-emerald);">👨‍🌾</div>
+                    <h3 style="font-size: 1.4rem; font-weight: 700;">Farmer Field Twin & AI Advisory</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.4rem;">
+                        Direct field telemetry, remote smart micro-drip control, and personalized crop care in local languages.
+                    </p>
+                    <ul class="portal-features-list">
+                        <li><span>💧</span> Real-time soil moisture & N-P-K nutrient telemetry</li>
+                        <li><span>🗣️</span> Multi-lingual AI Advice in Hindi, Marathi, Punjabi, Gujarati & more</li>
+                        <li><span>🚜</span> 1-Click machinery rental booking for tractors & drones</li>
+                        <li><span>💰</span> List harvested crops direct to buyers with zero broker fees</li>
+                    </ul>
+                </div>
+                <a th:href="@{/login}" class="btn btn-outline" style="width: 100%; border-color: var(--brand-emerald); color: var(--brand-emerald);">
+                    Launch Farmer Workspace ➔
+                </a>
+            </div>
+
+            <!-- Portal 2: Businessman & Consumer Marketplace -->
+            <div class="portal-card portal-buyer">
+                <div>
+                    <div class="portal-icon" style="background: rgba(245, 158, 11, 0.2); color: var(--accent-gold);">💼</div>
+                    <h3 style="font-size: 1.4rem; font-weight: 700;">Mandi Benchmarks & Direct Trade</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.4rem;">
+                        Official APMC commodity price feeds across Indian states and instant purchasing of verified farm harvests.
+                    </p>
+                    <ul class="portal-features-list">
+                        <li><span>🏛️</span> Live official Mandi price benchmarks & trends</li>
+                        <li><span>🌾</span> Direct verified farm gate listings with moisture & grade specs</li>
+                        <li><span>🚚</span> Transparent order booking with farmer phone contacts</li>
+                        <li><span>📊</span> Real-time commodity price momentum tracking</li>
+                    </ul>
+                </div>
+                <a th:href="@{/login}" class="btn btn-outline" style="width: 100%; border-color: var(--accent-gold); color: var(--accent-gold);">
+                    Explore Commodity Market ➔
+                </a>
+            </div>
+
+            <!-- Portal 3: Company Administrator Fleet -->
+            <div class="portal-card portal-admin">
+                <div>
+                    <div class="portal-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8);">🛡️</div>
+                    <h3 style="font-size: 1.4rem; font-weight: 700;">Machinery Fleet Operations</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.4rem;">
+                        Company depot oversight, autonomous tractors, drone sprayer telematics, and security audit log ledgers.
+                    </p>
+                    <ul class="portal-features-list">
+                        <li><span>🚜</span> Real-time status: In-Use, Depot Available, Maintenance</li>
+                        <li><span>🔋</span> Battery/Fuel monitoring & service schedule tracking</li>
+                        <li><span>🔒</span> Immutable security audit log of every system transaction</li>
+                        <li><span>👥</span> User management & cooperative equipment allocation</li>
+                    </ul>
+                </div>
+                <a th:href="@{/login}" class="btn btn-outline" style="width: 100%; border-color: #38bdf8; color: #38bdf8;">
+                    Access Admin Console ➔
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Mandi Rates Across India Table -->
+    <section class="card" id="mandi-rates" style="margin-bottom: 4rem;">
+        <div class="card-title">
+            <div>
+                <span style="color: var(--accent-gold);">🏛️ Official APMC Mandi Commodity Rates (₹ / Quintal)</span>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 400; margin-top: 0.2rem;">
+                    Daily agricultural commodity pricing benchmark feeds across major Indian states
+                </p>
+            </div>
+            <span class="status-pill status-available">Live Market Feed</span>
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Commodity & Variety</th>
+                        <th>State</th>
+                        <th>APMC Mandi</th>
+                        <th>Min Rate</th>
+                        <th>Max Rate</th>
+                        <th>Modal Benchmark</th>
+                        <th>Daily Trend</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="m : ${mandiPrices}">
+                        <td><strong th:text="${m.commodity}"></strong></td>
+                        <td th:text="${m.state}"></td>
+                        <td th:text="${m.mandiName}" style="color: var(--text-secondary);"></td>
+                        <td>₹<span th:text="${#numbers.formatDecimal(m.minPricePerQuintal, 1, 0)}"></span></td>
+                        <td>₹<span th:text="${#numbers.formatDecimal(m.maxPricePerQuintal, 1, 0)}"></span></td>
+                        <td style="font-weight: 700; color: var(--brand-emerald);">
+                            ₹<span th:text="${#numbers.formatDecimal(m.modalPricePerQuintal, 1, 0)}"></span>
+                        </td>
+                        <td>
+                            <span th:if="${m.priceTrend == 'RISING'}" style="color: #34d399; font-weight: 600;">
+                                ▲ +<span th:text="${m.percentageChange}"></span>%
+                            </span>
+                            <span th:if="${m.priceTrend == 'FALLING'}" style="color: #f87171; font-weight: 600;">
+                                ▼ <span th:text="${m.percentageChange}"></span>%
+                            </span>
+                            <span th:if="${m.priceTrend == 'STABLE'}" style="color: #94a3b8; font-weight: 600;">
+                                ▬ 0.0%
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 1-Click Instant Demo Launcher -->
+    <section class="demo-roles-banner" id="demo-roles">
+        <h2 style="font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800; color: var(--text-main);">
+            🚀 Experience AgriSelf in 1-Click
+        </h2>
+        <p style="color: var(--text-secondary); max-width: 650px; margin: 0.5rem auto 1.8rem; font-size: 0.95rem;">
+            Test the entire production platform instantly with pre-seeded role credentials:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.2rem; max-width: 900px; margin: 0 auto; text-align: left;">
+            <div style="background: var(--bg-surface); padding: 1.4rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <div style="font-size: 1.1rem; font-weight: 700; color: var(--brand-emerald); margin-bottom: 0.3rem;">
+                    👨‍🌾 Ramesh Patel (Farmer)
+                </div>
+                <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+                    Login: <code>farmer@agriself.com</code><br>Pass: <code>Farmer@123</code>
+                </div>
+                <a th:href="@{/login}" class="btn btn-outline" style="width: 100%; border-color: var(--brand-emerald); color: var(--brand-emerald); font-size: 0.84rem;">
+                    Sign In as Farmer ➔
+                </a>
+            </div>
+
+            <div style="background: var(--bg-surface); padding: 1.4rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <div style="font-size: 1.1rem; font-weight: 700; color: var(--accent-gold); margin-bottom: 0.3rem;">
+                    💼 Vikram Singhania (Buyer)
+                </div>
+                <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+                    Login: <code>buyer@agriself.com</code><br>Pass: <code>Buyer@123</code>
+                </div>
+                <a th:href="@{/login}" class="btn btn-outline" style="width: 100%; border-color: var(--accent-gold); color: var(--accent-gold); font-size: 0.84rem;">
+                    Sign In as Buyer ➔
+                </a>
+            </div>
+
+            <div style="background: var(--bg-surface); padding: 1.4rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <div style="font-size: 1.1rem; font-weight: 700; color: #38bdf8; margin-bottom: 0.3rem;">
+                    🛡️ Rajesh Sharma (Admin)
+                </div>
+                <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+                    Login: <code>admin@agriself.com</code><br>Pass: <code>Admin@123</code>
+                </div>
+                <a th:href="@{/login}" class="btn btn-outline" style="width: 100%; border-color: #38bdf8; color: #38bdf8; font-size: 0.84rem;">
+                    Sign In as Admin ➔
+                </a>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container" style="margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+        <div>
+            <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.3rem;">
+                🌾 Agri<span>Self</span> Autonomous Agritech
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">
+                Enterprise Full-Stack Architecture powered by Java 17, Spring Boot 3 & Native Agronomic AI.
+            </p>
+        </div>
+        <div style="display: flex; gap: 1.5rem; font-size: 0.82rem;">
+            <span>🔒 Rate Limiting</span>
+            <span>🛡️ Anti-XSS Sanitized</span>
+            <span>🔑 BCrypt Hashed</span>
+            <span>🌐 Strict CSP</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+    function selectPreset(cropName, conditionName, symptom, imgUrl, el) {
+        document.querySelectorAll('.scanner-preset-item').forEach(item => item.classList.remove('active'));
+        if (el) el.classList.add('active');
+
+        document.getElementById('diagResultImg').src = imgUrl;
+
+        const csrfTokenMeta = document.querySelector('meta[name="_csrf"]');
+        const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+        const headers = { 'Content-Type': 'application/json' };
+        if (csrfTokenMeta && csrfHeaderMeta) {
+            headers[csrfHeaderMeta.getAttribute('content')] = csrfTokenMeta.getAttribute('content');
+        }
+
+        fetch('/api/v1/diagnostic/scan-preset', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({
+                cropName: cropName,
+                symptom: symptom,
+                sampleImage: imgUrl
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('diagResultTitle').innerText = data.diagnosisResult || conditionName;
+            document.getElementById('diagResultCrop').innerHTML = `Crop: ${data.cropName} | Confidence: <strong style="color: var(--brand-emerald);">${data.confidence.toFixed(1)}%</strong>`;
+            document.getElementById('diagSeverityBadge').innerText = `${data.severity} SEVERITY`;
+            document.getElementById('diagImmediateAction').innerText = data.immediateAction || "Action required.";
+            document.getElementById('diagBioSolution').innerText = data.biologicalSolution || "Apply organic treatment.";
+            document.getElementById('diagValveProtocol').innerText = data.chemicalOrSmartProtocol || "Adjust drip frequency.";
+        })
+        .catch(err => {
+            console.error("Diagnosis error:", err);
+        });
+    }
+</script>
+
+</body>
+</html>

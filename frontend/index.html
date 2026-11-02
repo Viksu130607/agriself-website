@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGRISELF | Autonomous AI Micro-Farming & Precision Agritech System</title>
+  <meta name="description" content="AgriSelf is an end-to-end, AI-powered autonomous farming platform designed to convert small-to-medium agricultural land into self-managing, high-yield ecosystems.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+  <!-- Interactive Background Canvas (Bioluminescent Particles & Mesh) -->
+  <canvas id="bgParticleCanvas" class="bg-particle-canvas"></canvas>
+  
+  <!-- Scanline HUD effect -->
+  <div class="hud-grid-overlay"></div>
+
+  <!-- Main Navigation Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-group">
+        <div class="logo-icon-wrap">
+          <svg class="leaf-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+            <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+          </svg>
+          <div class="pulse-ring"></div>
+        </div>
+        <div>
+          <div class="brand-title-wrap">
+            <h1 class="brand-title">AGRISELF</h1>
+            <span class="brand-badge">AI v2.4 PRO</span>
+          </div>
+          <p class="brand-subtitle">Autonomous AI Micro-Farming & Precision Agritech</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <nav class="nav-tabs" role="tablist">
+        <button class="nav-tab active" data-tab="tab-overview" id="tabBtnOverview">
+          <span class="tab-icon">🌱</span> Farm Digital Twin
+        </button>
+        <button class="nav-tab" data-tab="tab-diagnostics" id="tabBtnDiagnostics">
+          <span class="tab-icon">🔬</span> AI Crop Scanner
+        </button>
+        <button class="nav-tab" data-tab="tab-microdosing" id="tabBtnMicrodosing">
+          <span class="tab-icon">💧</span> Dynamic Micro-Dosing
+        </button>
+        <button class="nav-tab" data-tab="tab-harvest" id="tabBtnHarvest">
+          <span class="tab-icon">📈</span> Yield & Market Link
+        </button>
+        <button class="nav-tab" data-tab="tab-pitch" id="tabBtnPitch">
+          <span class="tab-icon">📋</span> Pitch Deck & Tech
+        </button>
+      </nav>
+    </div>
+
+    <div class="header-right">
+      <button class="audio-toggle-btn" id="audioToggleBtn" title="Toggle Futuristic Sound Effects">
+        <span id="audioIcon">🔊</span>
+      </button>
+
+      <div class="system-mode-toggle" id="autopilotToggleWrapper">
+        <span class="mode-label">AUTO-PILOT</span>
+        <label class="switch">
+          <input type="checkbox" id="autopilotToggle" checked>
+          <span class="slider round"></span>
+        </label>
+        <span class="mode-badge active" id="autopilotStatusBadge">AUTONOMOUS</span>
+      </div>
+
+      <div class="ws-status-indicator" id="wsStatusIndicator" title="WebSocket Live Telemetry">
+        <span class="status-dot"></span>
+        <span class="status-text" id="wsStatusText">LIVE TELEMETRY</span>
+      </div>
+    </div>
+</header>
+<!-- Landing Page Additions -->
+<section class="landing-extras">
+  <h2>Live APMC Commodity Price Benchmarks</h2>
+  <p>Real‑time market price data for key crops.</p>
+  <h2>Interactive AI Crop Foliage Disease Scanner</h2>
+  <p>Try the demo in the AI Crop Scanner tab.</p>
+  <h2>1-Click Direct Role Logins</h2>
+  <div class="role-login-boxes">
+    <button onclick="location.href='/login?role=farmer'">Farmer</button>
+    <button onclick="location.href='/login?role=business'">Businessman</button>
+    <button onclick="location.href='/login?role=admin'">Administrator</button>
+  </div>
+</section>
+
+  <!-- Main Container -->
+  <main class="app-main">
+
+    <!-- Executive KPI Banner with Glowing Neon Accent Borders -->
+    <section class="kpi-banner">
+      <div class="kpi-card kpi-yield">
+        <div class="kpi-glow"></div>
+        <div class="kpi-corner-blip"></div>
+        <div class="kpi-icon-badge">📈</div>
+        <div class="kpi-info">
+          <span class="kpi-value" id="kpiYieldVal">+35%</span>
+          <span class="kpi-label">Average Yield Increase</span>
+          <span class="kpi-sub">Sensor-guided micro-nutrition & NDVI</span>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-water">
+        <div class="kpi-glow"></div>
+        <div class="kpi-corner-blip"></div>
+        <div class="kpi-icon-badge">💧</div>
+        <div class="kpi-info">
+          <span class="kpi-value" id="kpiWaterVal">-40%</span>
+          <span class="kpi-label">Water & Chemical Reduction</span>
+          <span class="kpi-sub">Real-time soil intake micro-drip</span>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-labor">
+        <div class="kpi-glow"></div>
+        <div class="kpi-corner-blip"></div>
+        <div class="kpi-icon-badge">🤖</div>
+        <div class="kpi-info">
+          <span class="kpi-value" id="kpiLaborVal">70%</span>
+          <span class="kpi-label">Manual Labor Hours Saved</span>
+          <span class="kpi-sub">Autonomous valves & drone scout</span>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-roi">
+        <div class="kpi-glow"></div>
+        <div class="kpi-corner-blip"></div>
+        <div class="kpi-icon-badge">⚡</div>
+        <div class="kpi-info">
+          <span class="kpi-value" id="kpiRoiVal">1.2 Yrs</span>
+          <span class="kpi-label">Estimated Payback Period</span>
+          <span class="kpi-sub">Hardware setup + SaaS subscription</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 1: OVERVIEW & DIGITAL TWIN -->
+    <div class="tab-pane active" id="tab-overview">
+      
+      <!-- Interactive 2.5D Visual Farm Map HUD -->
+      <div class="card-glass farm-map-section mb-4">
+        <div class="card-header-flex">
+          <div>
+            <div class="title-with-pill">
+              <h2 class="section-title">AgriSelf 2.5D Digital Twin Farm Command Center</h2>
+              <span class="badge badge-accent">REAL-TIME SENSOR MESH</span>
+            </div>
+            <p class="section-subtitle">Visual multi-depth telemetry, active drip manifold lines, and drone aerial coverage</p>
+          </div>
+          <div class="map-controls-group">
+            <span class="badge badge-success" id="activeValvesCountBadge">VALVES: 0 ACTIVE</span>
+            <button class="btn btn-secondary btn-sm" id="btnSimTick">
+              <span class="btn-icon">⚡</span> Trigger Climate Step
+            </button>
+          </div>
+        </div>
+
+        <div class="interactive-map-wrapper">
+          <!-- Visual Interactive Farm Sectors Canvas -->
+          <div class="farm-sectors-grid">
+            
+            <!-- Sector A -->
+            <div class="sector-card" id="sector-zone_a" onclick="selectSector('zone_a')">
+              <div class="sector-header">
+                <span class="sector-tag">SECTOR A</span>
+                <span class="sector-status-dot optimal"></span>
+              </div>
+              <div class="sector-illustration orchard-bg">
+                <div class="crop-rows-anim"></div>
+                <div class="water-drip-ripple" id="ripple-zone_a"></div>
+              </div>
+              <div class="sector-footer">
+                <strong class="sector-name">Pinot Vineyard</strong>
+                <span class="sector-stat" id="stat-moisture-zone_a">44.5% Moisture</span>
+              </div>
+            </div>
+
+            <!-- Sector B -->
+            <div class="sector-card" id="sector-zone_b" onclick="selectSector('zone_b')">
+              <div class="sector-header">
+                <span class="sector-tag">SECTOR B</span>
+                <span class="sector-status-dot active"></span>
+              </div>
+              <div class="sector-illustration greenhouse-bg">
+                <div class="greenhouse-structure"></div>
+                <div class="water-drip-ripple" id="ripple-zone_b"></div>
+              </div>
+              <div class="sector-footer">
+                <strong class="sector-name">Smart Greenhouse</strong>
+                <span class="sector-stat" id="stat-moisture-zone_b">58.2% Moisture</span>
+              </div>
+            </div>
+
+            <!-- Sector C -->
+            <div class="sector-card" id="sector-zone_c" onclick="selectSector('zone_c')">
+              <div class="sector-header">
+                <span class="sector-tag">SECTOR C</span>
+                <span class="sector-status-dot warning"></span>
+              </div>
+              <div class="sector-illustration openfield-bg">
+                <div class="field-tilled-lines"></div>
+                <div class="water-drip-ripple" id="ripple-zone_c"></div>
+              </div>
+              <div class="sector-footer">
+                <strong class="sector-name">Open-Field Maize</strong>
+                <span class="sector-stat text-crimson" id="stat-moisture-zone_c">34.2% Deficit</span>
+              </div>
+            </div>
+
+            <!-- Sector D -->
+            <div class="sector-card" id="sector-zone_d" onclick="selectSector('zone_d')">
+              <div class="sector-header">
+                <span class="sector-tag">SECTOR D</span>
+                <span class="sector-status-dot optimal"></span>
+              </div>
+              <div class="sector-illustration berry-bg">
+                <div class="berry-bushes-anim"></div>
+                <div class="water-drip-ripple" id="ripple-zone_d"></div>
+              </div>
+              <div class="sector-footer">
+                <strong class="sector-name">Organic Berries</strong>
+                <span class="sector-stat" id="stat-moisture-zone_d">52.1% Moisture</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Animated Drone Flight Overlay over Farm Sectors -->
+          <div class="drone-flyover-path" id="droneFlyover">
+            <div class="drone-quadcopter-icon">
+              <div class="propeller p1"></div>
+              <div class="propeller p2"></div>
+              <div class="propeller p3"></div>
+              <div class="propeller p4"></div>
+              <div class="drone-body-core"></div>
+              <div class="drone-laser-cone"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-layout-twins">
+        
+        <!-- Left Column: Detailed Zone Telemetry Cards -->
+        <div class="col-main">
+          <div class="section-card-header">
+            <div>
+              <h2 class="section-title">IoT Soil Probes & Hardware Actuators</h2>
+              <p class="section-subtitle">Real-time sub-surface moisture, dynamic NPK balance, and smart valve actuation</p>
+            </div>
+          </div>
+
+          <div class="zones-grid" id="zonesGridContainer">
+            <!-- Dynamic Zone Cards Rendered by JS -->
+          </div>
+
+          <!-- Live Telemetry Graph Card -->
+          <div class="card-glass mt-4">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Real-Time Soil Moisture & Temperature Waveforms</h3>
+                <p class="card-subtitle">IoT Edge telemetry sampled via wireless mesh gateway at 1 Hz</p>
+              </div>
+              <div class="badge badge-accent">LIVE TELEMETRY STREAM</div>
+            </div>
+            <div class="chart-container" style="position: relative; height: 270px; width: 100%;">
+              <canvas id="telemetryChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Drone Patrol & Autonomous Ledger -->
+        <div class="col-sidebar">
+          
+          <!-- Aerial Drone Telemetry Card -->
+          <div class="card-glass drone-card">
+            <div class="card-header-flex">
+              <div class="drone-title-group">
+                <span class="drone-radar-ping"></span>
+                <div>
+                  <h3 class="card-title">AI Aerial Diagnostics</h3>
+                  <p class="card-subtitle" id="droneIdText">Drone Alpha-1 // Patrol Active</p>
+                </div>
+              </div>
+              <span class="badge badge-success" id="droneStatusBadge">PATROL 14.5m</span>
+            </div>
+
+            <div class="drone-hud-viewport">
+              <div class="drone-crosshair"></div>
+              <div class="drone-scan-line"></div>
+              <div class="drone-hud-telemetry">
+                <div>BATTERY: <span id="droneBatteryText">86%</span></div>
+                <div>ALT: <span id="droneAltText">14.5m</span></div>
+                <div>TARGET: <span id="droneZoneText">Zone B</span></div>
+                <div>CAM: <span class="text-emerald">MULTISPECTRAL</span></div>
+              </div>
+            </div>
+
+            <div class="drone-actions">
+              <button class="btn btn-outline btn-sm w-100" id="btnInspectDroneFeed">
+                🔬 View Real-time NDVI Camera Stream
+              </button>
+            </div>
+          </div>
+
+          <!-- Autonomous Action Ledger -->
+          <div class="card-glass mt-4 ledger-card">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="card-title">Autonomous Action Ledger</h3>
+                <p class="card-subtitle">Immutable audit trail of AI execution</p>
+              </div>
+              <span class="badge badge-outline" id="ledgerCountBadge">LIVE STREAM</span>
+            </div>
+
+            <div class="ledger-feed" id="ledgerFeedContainer">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: AI CROP SCANNER (COMPUTER VISION & HYPERSPECTRAL) -->
+    <div class="tab-pane" id="tab-diagnostics">
+      <div class="scanner-layout">
+        
+        <!-- Left: Upload & Leaf Viewport with Heatmap & HUD View Switcher -->
+        <div class="scanner-left card-glass">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Hyperspectral & Computer Vision Crop Scanner</h2>
+              <p class="card-subtitle">Detect early pest, fungal disease, and nutrient stress 7–10 days before visual onset</p>
+            </div>
+            <div class="view-mode-toggle-group">
+              <button class="btn-toggle-view active" id="btnViewRgb" onclick="switchScanView('rgb')">📷 RGB Vision</button>
+              <button class="btn-toggle-view" id="btnViewNdvi" onclick="switchScanView('ndvi')">🌈 NDVI Heatmap</button>
+            </div>
+          </div>
+
+          <!-- Upload Dropzone -->
+          <div class="upload-dropzone" id="uploadDropzone">
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            <div class="dropzone-content" id="dropzoneContent">
+              <div class="upload-icon-animated">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="40" height="40">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </div>
+              <p class="upload-primary-text">Drag & drop leaf photo or click to upload</p>
+              <p class="upload-sub-text">Supports 4K RGB, Multispectral Drone orthomosaics, PNG/JPG</p>
+            </div>
+          </div>
+
+          <!-- Quick Test Samples -->
+          <div class="quick-samples-bar">
+            <span class="samples-title">Instant Diagnostic Presets:</span>
+            <div class="samples-buttons">
+              <button class="btn-sample active" data-sample="sample_healthy_leaf.png">🌿 Healthy Crop</button>
+              <button class="btn-sample" data-sample="sample_early_blight_leaf.png">🍂 Early Blight</button>
+              <button class="btn-sample" data-sample="sample_late_blight_leaf.png">🦠 Late Blight</button>
+              <button class="btn-sample" data-sample="sample_powdery_mildew_leaf.png">⚪ Powdery Mildew</button>
+              <button class="btn-sample" data-sample="sample_nitrogen_deficiency_leaf.png">🟡 Nitrogen Chlorosis</button>
+            </div>
+          </div>
+
+          <!-- Leaf Image HUD Preview with Targeting Reticle -->
+          <div class="image-hud-wrapper" id="imageHudWrapper">
+            <div class="hud-corner-bracket top-left"></div>
+            <div class="hud-corner-bracket top-right"></div>
+            <div class="hud-corner-bracket bottom-left"></div>
+            <div class="hud-corner-bracket bottom-right"></div>
+            
+            <div class="scanner-beam" id="scannerBeam"></div>
+            <img id="previewImage" src="sample_data/sample_healthy_leaf.png" alt="Crop Scan Viewport">
+            
+            <div class="hud-status-tag" id="hudStatusTag">AGRISELF AI // SPECTRAL MATRIX READY</div>
+            <div class="hud-coords-tag">FOV: 52° • RES: 256x256 • BAND: NIR/RED</div>
+          </div>
+
+          <button class="btn btn-primary w-100 mt-3" id="btnRunDiagnosis">
+            <span class="btn-icon">⚡</span> Run Deep AI Diagnostic Scan
+          </button>
+        </div>
+
+        <!-- Right: AI Diagnostic Result & Prescription -->
+        <div class="scanner-right card-glass">
+          <div class="card-header-flex">
+            <div>
+              <h3 class="card-title">Diagnostic Results & Actionable Prescription</h3>
+              <p class="card-subtitle">Automated agronomic recommendations & smart valve hardware protocol</p>
+            </div>
+            <div class="confidence-radial-wrap">
+              <svg class="radial-gauge" viewBox="0 0 36 36">
+                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path class="circle" id="radialCircle" stroke-dasharray="98, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              </svg>
+              <div class="radial-text" id="radialConfText">98%</div>
+            </div>
+          </div>
+
+          <!-- Condition Result Banner -->
+          <div class="diag-banner" id="diagBanner">
+            <div class="diag-banner-header">
+              <span class="diag-icon" id="diagIcon">🌿</span>
+              <div>
+                <h3 class="diag-condition-title" id="diagConditionTitle">Healthy Crop (Optimal Vigour)</h3>
+                <span class="diag-severity-pill" id="diagSeverityPill">Severity: None (0/10)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Multispectral Vegetation Metrics -->
+          <div class="spectral-metrics-grid">
+            <div class="metric-box">
+              <span class="metric-title">NDVI Index</span>
+              <span class="metric-val text-emerald" id="metricNdvi">0.824</span>
+              <span class="metric-hint">Normalized Difference Veg</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-title">NDRE Index</span>
+              <span class="metric-val text-cyan" id="metricNdre">0.582</span>
+              <span class="metric-hint">Red-Edge Chlorophyll</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-title">GNDVI</span>
+              <span class="metric-val text-lime" id="metricGndvi">0.761</span>
+              <span class="metric-hint">Green Canopy Biomass</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-title">Chlorophyll Index</span>
+              <span class="metric-val text-amber" id="metricChlor">4.20</span>
+              <span class="metric-hint">Photosynthetic Activity</span>
+            </div>
+          </div>
+
+          <!-- Actionable Prescriptions -->
+          <div class="prescription-container">
+            <h4 class="presc-heading">🔬 AgriSelf Automated Treatment Plan</h4>
+            
+            <div class="presc-item">
+              <div class="presc-bullet bullet-amber">⚡</div>
+              <div class="presc-content">
+                <span class="presc-title">Immediate Agronomic Action:</span>
+                <p class="presc-desc" id="prescAction">Maintain autonomous micro-irrigation schedule and baseline NPK balance.</p>
+              </div>
+            </div>
+
+            <div class="presc-item">
+              <div class="presc-bullet bullet-emerald">🌱</div>
+              <div class="presc-content">
+                <span class="presc-title">Organic & Biological Prescription:</span>
+                <p class="presc-desc" id="prescOrganic">Weekly prophylactic neem oil spray (0.2%) during high humidity.</p>
+              </div>
+            </div>
+
+            <div class="presc-item">
+              <div class="presc-bullet bullet-cyan">🤖</div>
+              <div class="presc-content">
+                <span class="presc-title">Automated Hardware & Smart Valve Protocol:</span>
+                <p class="presc-desc" id="prescHardware">Standard micro-drip pulse: 12 min at 06:00 and 18:00.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Neural Class Probabilities Breakdown -->
+          <div class="prob-breakdown mt-3">
+            <span class="prob-title">Neural Probability Breakdown:</span>
+            <div class="prob-list" id="probListContainer">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 3: DYNAMIC MICRO-DOSING & IRRIGATION SIMULATOR -->
+    <div class="tab-pane" id="tab-microdosing">
+      <div class="dosing-layout">
+        
+        <!-- Left: Input Sliders -->
+        <div class="dosing-left card-glass">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Autonomous Micro-Climate & Dynamic Micro-Dosing AI</h2>
+              <p class="card-subtitle">Micro-drips tailored to individual crop rows based on real-time soil intake rate</p>
+            </div>
+            <span class="badge badge-accent">ML REGRESSION ENGINE</span>
+          </div>
+
+          <form id="microDosingForm" class="dosing-form">
+            
+            <!-- Soil Moisture Slider -->
+            <div class="form-group">
+              <div class="label-flex">
+                <label for="sliderMoisture">Soil Moisture Level (%)</label>
+                <span class="slider-val" id="valMoisture">42.0%</span>
+              </div>
+              <input type="range" id="sliderMoisture" min="15" max="75" step="0.5" value="42.0" class="custom-slider">
+            </div>
+
+            <!-- Temperature & Humidity -->
+            <div class="form-row-2">
+              <div class="form-group">
+                <div class="label-flex">
+                  <label for="sliderAmbientTemp">Ambient Temp (°C)</label>
+                  <span class="slider-val" id="valAmbientTemp">28.0°C</span>
+                </div>
+                <input type="range" id="sliderAmbientTemp" min="12" max="45" step="0.5" value="28.0" class="custom-slider">
+              </div>
+
+              <div class="form-group">
+                <div class="label-flex">
+                  <label for="sliderHumidity">Humidity (%)</label>
+                  <span class="slider-val" id="valHumidity">55.0%</span>
+                </div>
+                <input type="range" id="sliderHumidity" min="15" max="95" step="1" value="55.0" class="custom-slider">
+              </div>
+            </div>
+
+            <!-- Solar Radiation & Rain Forecast -->
+            <div class="form-row-2">
+              <div class="form-group">
+                <div class="label-flex">
+                  <label for="sliderSolar">Solar Radiation (W/m²)</label>
+                  <span class="slider-val" id="valSolar">650 W/m²</span>
+                </div>
+                <input type="range" id="sliderSolar" min="50" max="1050" step="10" value="650" class="custom-slider">
+              </div>
+
+              <div class="form-group">
+                <div class="label-flex">
+                  <label for="selectRain">24h Rain Forecast</label>
+                </div>
+                <select id="selectRain" class="custom-select">
+                  <option value="0.0">0 mm (Clear Skies)</option>
+                  <option value="2.5">2.5 mm (Light Drizzle)</option>
+                  <option value="8.0">8.0 mm (Moderate Rain)</option>
+                  <option value="18.0">18.0 mm (Heavy Rain)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- N-P-K Levels -->
+            <div class="form-row-3">
+              <div class="form-group">
+                <div class="label-flex">
+                  <label for="sliderN">Nitrogen (N)</label>
+                  <span class="slider-val" id="valN">65 ppm</span>
+                </div>
+                <input type="range" id="sliderN" min="15" max="180" step="1" value="65" class="custom-slider">
+              </div>
+
+              <div class="form-group">
+                <div class="label-flex">
+                  <label for="sliderP">Phosphorus (P)</label>
+                  <span class="slider-val" id="valP">35 ppm</span>
+                </div>
+                <input type="range" id="sliderP" min="10" max="90" step="1" value="35" class="custom-slider">
+              </div>
+
+              <div class="form-group">
+                <div class="label-flex">
+                  <label for="sliderK">Potassium (K)</label>
+                  <span class="slider-val" id="valK">120 ppm</span>
+                </div>
+                <input type="range" id="sliderK" min="30" max="300" step="1" value="120" class="custom-slider">
+              </div>
+            </div>
+
+            <!-- Growth Stage -->
+            <div class="form-group">
+              <label>Crop Phenological Growth Stage</label>
+              <div class="growth-stage-chips" id="growthStageChips">
+                <button type="button" class="stage-chip" data-stage="0">🌱 Seedling</button>
+                <button type="button" class="stage-chip active" data-stage="1">🌿 Vegetative</button>
+                <button type="button" class="stage-chip" data-stage="2">🌸 Flowering / Fruiting</button>
+                <button type="button" class="stage-chip" data-stage="3">🌾 Ripening / Harvest</button>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-primary w-100" id="btnCalculateDosing">
+              <span class="btn-icon">⚡</span> Compute Dynamic Micro-Dose
+            </button>
+
+          </form>
+        </div>
+
+        <!-- Right: Real-time AI Micro-Dosing Outputs with Soil Stratification Visualizer -->
+        <div class="dosing-right card-glass">
+          <div class="card-header-flex">
+            <div>
+              <h3 class="card-title">AgriSelf AI Dynamic Dosage & Actuator Commands</h3>
+              <p class="card-subtitle">Real-time Penman-Monteith Evapotranspiration & Micro-Nutrient Balancing</p>
+            </div>
+            <span class="badge badge-success" id="dosingActionBadge">OPTIMAL BALANCE</span>
+          </div>
+
+          <!-- Soil Water & Nutrient Stratification Interactive Tank -->
+          <div class="soil-tank-card mb-3">
+            <div class="soil-tank-header">
+              <span>ROOT ZONE ABSORPTION STRATIFICATION</span>
+              <span id="tankAbsorptionRate">INTAKE RATE: 3.2 L/m²/hr</span>
+            </div>
+            <div class="soil-stratification-tank">
+              <div class="plant-root-system"></div>
+              <div class="soil-water-level" id="soilWaterLevel" style="height: 42%;"></div>
+              <div class="nutrient-particles-container" id="nutrientParticlesContainer"></div>
+              <div class="tank-layer topsoil">Topsoil Active Aeration (0-15cm)</div>
+              <div class="tank-layer rootzone">Primary Rhizosphere Zone (15-45cm)</div>
+              <div class="tank-layer subsoil">Capillary Aquifer Reserve (45-90cm)</div>
+            </div>
+          </div>
+
+          <!-- Core Output Metrics -->
+          <div class="dosing-results-grid">
+            
+            <div class="dose-card dose-water">
+              <div class="dose-icon">💧</div>
+              <div class="dose-data">
+                <span class="dose-val" id="resWaterNeed">3.85 <small>L/m²</small></span>
+                <span class="dose-lbl">Water Requirement</span>
+                <span class="dose-sub">Calculated via soil intake rate</span>
+              </div>
+            </div>
+
+            <div class="dose-card dose-valve">
+              <div class="dose-icon">⏱️</div>
+              <div class="dose-data">
+                <span class="dose-val" id="resValveDuration">72.2 <small>min</small></span>
+                <span class="dose-lbl">Smart Valve Pulse Duration</span>
+                <span class="dose-sub">Sub-surface micro-drip flow rate</span>
+              </div>
+            </div>
+
+            <div class="dose-card dose-nutrients">
+              <div class="dose-icon">🧪</div>
+              <div class="dose-data">
+                <span class="dose-val" id="resTotalNutrients">18.4 <small>g/m²</small></span>
+                <span class="dose-lbl">Dynamic Dissolved N-P-K</span>
+                <span class="dose-sub">Micro-injection via Venturi pump</span>
+              </div>
+            </div>
+
+            <div class="dose-card dose-stress">
+              <div class="dose-icon">📊</div>
+              <div class="dose-data">
+                <span class="dose-val" id="resStressIndex">24.5 <small>/100</small></span>
+                <span class="dose-lbl">Crop Stress Index</span>
+                <span class="dose-sub">Low stress zone</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Micro-Nutrient Breakdown -->
+          <div class="nutrient-bars-card mt-3">
+            <h4 class="card-section-title">Dynamic Micro-Dose Injection Schedule</h4>
+            
+            <div class="nutrient-item">
+              <div class="nutrient-header">
+                <span>Nitrogen (N) Micro-Injection</span>
+                <strong id="barNVal">+5.40 g/m²</strong>
+              </div>
+              <div class="progress-bar-bg"><div class="progress-bar-fill fill-emerald" id="barN" style="width: 45%;"></div></div>
+            </div>
+
+            <div class="nutrient-item">
+              <div class="nutrient-header">
+                <span>Phosphorus (P) Micro-Injection</span>
+                <strong id="barPVal">+1.60 g/m²</strong>
+              </div>
+              <div class="progress-bar-bg"><div class="progress-bar-fill fill-cyan" id="barP" style="width: 25%;"></div></div>
+            </div>
+
+            <div class="nutrient-item">
+              <div class="nutrient-header">
+                <span>Potassium (K) Micro-Injection</span>
+                <strong id="barKVal">+7.00 g/m²</strong>
+              </div>
+              <div class="progress-bar-bg"><div class="progress-bar-fill fill-amber" id="barK" style="width: 60%;"></div></div>
+            </div>
+          </div>
+
+          <!-- Autonomous Execution Button -->
+          <div class="actuator-trigger-box mt-3">
+            <div class="trigger-info">
+              <h4>Direct Valve Actuation</h4>
+              <p>Deploy calculated pulse dosage directly to selected farm zone hardware</p>
+            </div>
+            <button class="btn btn-accent" id="btnExecuteDosing">
+              🚀 Deploy to Zone Valves
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 4: YIELD & MARKET LINK -->
+    <div class="tab-pane" id="tab-harvest">
+      <div class="harvest-layout">
+        
+        <!-- Left: Market Trends & Harvest Timeline -->
+        <div class="harvest-left card-glass">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Predictive Market Link & Optimal Harvest Timing</h2>
+              <p class="card-subtitle">AI recommends optimal harvest timing based on local crop market price trends</p>
+            </div>
+            <span class="badge badge-accent">MARKET LINK AI</span>
+          </div>
+
+          <!-- Crop Selector -->
+          <div class="crop-select-strip">
+            <button class="btn-crop active" data-crop="0">🍅 Roma Tomatoes</button>
+            <button class="btn-crop" data-crop="1">🍇 Pinot Noir Grapes</button>
+            <button class="btn-crop" data-crop="2">🍓 Alpine Strawberries</button>
+            <button class="btn-crop" data-crop="3">🫑 Bell Peppers</button>
+          </div>
+
+          <!-- Harvest Recommendation Banner -->
+          <div class="harvest-signal-banner mt-3" id="harvestSignalBanner">
+            <div class="signal-icon">⏱️</div>
+            <div class="signal-info">
+              <span class="signal-badge">RECOMMENDED HARVEST WINDOW</span>
+              <h3 class="signal-window" id="harvestWindowText">6–9 Days From Today</h3>
+              <p class="signal-reason" id="harvestReasonText">Local commodity spot price surging +6.5% over next 7 days. Crop reaches peak brix & yield index simultaneously.</p>
+            </div>
+          </div>
+
+          <!-- Market Price Volatility Chart -->
+          <div class="chart-box mt-4">
+            <div class="chart-title-flex">
+              <h3 class="card-title">7-Day Historical Spot Price & 7-Day AI Price Forecast ($/ton)</h3>
+              <span class="badge badge-warning">AI PEAK PREDICTOR</span>
+            </div>
+            <div class="chart-container" style="position: relative; height: 270px; width: 100%;">
+              <canvas id="marketChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Farm Economics & ROI Payback Calculator -->
+        <div class="harvest-right card-glass">
+          <div class="card-header-flex">
+            <div>
+              <h3 class="card-title">Farm Economics & ROI Payback Calculator</h3>
+              <p class="card-subtitle">Commercial smallholders, greenhouse farms, and organic orchards</p>
+            </div>
+            <span class="badge badge-success">PAYBACK 1.2 YRS</span>
+          </div>
+
+          <!-- Calculator Inputs -->
+          <div class="roi-form mt-2">
+            <div class="form-group">
+              <div class="label-flex">
+                <label for="inputAcres">Total Farm Size (Acres)</label>
+                <span class="slider-val" id="valAcres">12.0 Acres</span>
+              </div>
+              <input type="range" id="inputAcres" min="1" max="50" step="0.5" value="12" class="custom-slider">
+            </div>
+
+            <div class="form-group">
+              <label for="selectCropTypeRoi">Target Crop Category</label>
+              <select id="selectCropTypeRoi" class="custom-select">
+                <option value="0">High-Value Specialty Tomatoes ($720/ton)</option>
+                <option value="1">Premium Vineyard / Wine Grapes ($2,850/ton)</option>
+                <option value="2">Organic Greenhouse Strawberries ($3,480/ton)</option>
+                <option value="3">Controlled-Environment Bell Peppers ($1,280/ton)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ROI Projections -->
+          <div class="roi-cards-grid mt-3">
+            
+            <div class="roi-stat-card">
+              <span class="roi-stat-lbl">AgriSelf Projected Yield</span>
+              <span class="roi-stat-val text-emerald" id="roiYieldTotal">583.2 Tons</span>
+              <span class="roi-stat-sub">+35% boost over conventional</span>
+            </div>
+
+            <div class="roi-stat-card">
+              <span class="roi-stat-lbl">Annual Input Cost Savings</span>
+              <span class="roi-stat-val text-cyan" id="roiInputSavings">$18,400</span>
+              <span class="roi-stat-sub">-40% water, fertilizer & energy</span>
+            </div>
+
+            <div class="roi-stat-card">
+              <span class="roi-stat-lbl">Annual Net Revenue Gain</span>
+              <span class="roi-stat-val text-lime" id="roiRevenueGain">$108,600</span>
+              <span class="roi-stat-sub">Yield bonus + peak market timing</span>
+            </div>
+
+            <div class="roi-stat-card">
+              <span class="roi-stat-lbl">AgriSelf System Payback</span>
+              <span class="roi-stat-val text-amber" id="roiPaybackMonths">1.2 Years</span>
+              <span class="roi-stat-sub">Full hardware + SaaS amortized</span>
+            </div>
+
+          </div>
+
+          <div class="business-model-card mt-3">
+            <h4 class="card-section-title">AgriSelf Business Model & Streams</h4>
+            <div class="bm-grid">
+              <div class="bm-item">
+                <strong>Hardware Setup Fee</strong>
+                <p>Plug-and-play IoT probes, smart drip actuators, edge mesh gateway.</p>
+              </div>
+              <div class="bm-item">
+                <strong>SaaS AI Subscription</strong>
+                <p>Continuous AI predictive analytics, autonomous micro-dosing, market links.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 5: PITCH DECK & SYSTEM ARCHITECTURE -->
+    <div class="tab-pane" id="tab-pitch">
+      <div class="pitch-layout">
+        
+        <!-- Pitch Header Hero -->
+        <div class="card-glass pitch-hero-card">
+          <div class="pitch-badge-tag">OFFICIAL EXECUTIVE PITCH SHEET</div>
+          <h2 class="pitch-main-title">AGRISELF</h2>
+          <p class="pitch-lead-tagline">Autonomous AI Micro-Farming & Precision Agritech System</p>
+          <p class="pitch-main-desc">
+            AgriSelf is an end-to-end, AI-powered autonomous farming platform designed to convert small-to-medium agricultural land into self-managing, high-yield ecosystems. By integrating IoT edge sensors, predictive weather AI, and automated irrigation and fertilization hardware, AgriSelf enables farmers to maximize crop yields, lower resource waste, and achieve streamlined farm management.
+          </p>
+        </div>
+
+        <!-- 3 Hardware & AI Pillars -->
+        <div class="pillars-grid mt-4">
+          <div class="pillar-card">
+            <div class="pillar-num">01</div>
+            <div class="pillar-icon">📡</div>
+            <h3 class="pillar-title">1. IoT Edge Sensors</h3>
+            <p class="pillar-text">Multi-depth soil moisture probes, NPK electro-chemical sensors, pH meters, and ambient micro-climate telemetry stations continuously mapping soil vigor.</p>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-num">02</div>
+            <div class="pillar-icon">🛸</div>
+            <h3 class="pillar-title">2. AI Aerial Diagnostics</h3>
+            <p class="pillar-text">Autonomous drone multispectral & thermal surveys detecting fungal spores, nutrient deficiencies, and moisture stress 7–10 days before visual onset.</p>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-num">03</div>
+            <div class="pillar-icon">💧</div>
+            <h3 class="pillar-title">3. Smart Automated Drip</h3>
+            <p class="pillar-text">Plug-and-play actuators, solenoid valves, and dynamic micro-dosing injectors delivering exact water and nutrients per individual crop row.</p>
+          </div>
+        </div>
+
+        <!-- Problems vs Solutions Matrix -->
+        <div class="matrix-grid mt-4">
+          
+          <div class="card-glass matrix-col col-problems">
+            <h3 class="matrix-title text-crimson">⚠️ MARKET PROBLEMS</h3>
+            <ul class="matrix-list">
+              <li>
+                <strong>Resource Inefficiency:</strong> Over-irrigation and excessive chemical fertilizer usage waste up to 40% of inputs and deplete soil health.
+              </li>
+              <li>
+                <strong>Unpredictable Yields:</strong> Climate volatility, sudden pest outbreaks, and erratic weather cause severe crop loss without early warning.
+              </li>
+              <li>
+                <strong>Labor Shortages:</strong> Aging farming populations and rising manual labor costs make traditional farm management unsustainable.
+              </li>
+              <li>
+                <strong>Data Disconnect:</strong> Raw agricultural sensor data is complex; farmers lack actionable, automated execution tools.
+              </li>
+            </ul>
+          </div>
+
+          <div class="card-glass matrix-col col-solutions">
+            <h3 class="matrix-title text-emerald">✅ THE AGRISELF SOLUTION</h3>
+            <ul class="matrix-list">
+              <li>
+                <strong>Autonomous Micro-Climate Care:</strong> Precise soil-level IoT control adjusts water and nutrient delivery automatically in real time.
+              </li>
+              <li>
+                <strong>AI Predictive Diagnostics:</strong> Computer vision and ML models detect early pest and disease threats 7–10 days before visual impact.
+              </li>
+              <li>
+                <strong>Automated Execution:</strong> Plug-and-play actuators, smart valves, and autonomous drones reduce daily labor by 70%.
+              </li>
+              <li>
+                <strong>Simplified App Control:</strong> One-click dashboard providing clear yield projections and automated task management.
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- 4-Step Autonomous Flow -->
+        <div class="card-glass mt-4 workflow-card">
+          <h3 class="card-title text-center">HOW IT WORKS // 4-STEP CLOSED LOOP</h3>
+          
+          <div class="steps-flow-grid mt-3">
+            <div class="step-box">
+              <span class="step-num">STEP 01</span>
+              <h4>Sense & Monitor</h4>
+              <p>IoT soil probes & drone cameras continuously map moisture, NPK levels, and crop health.</p>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-box">
+              <span class="step-num">STEP 02</span>
+              <h4>AI Engine Analysis</h4>
+              <p>AgriSelf AI processes environmental feeds, weather forecasts, and historical crop data.</p>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-box">
+              <span class="step-num">STEP 03</span>
+              <h4>Autonomous Action</h4>
+              <p>Smart valves and automated micro-dosing systems deliver exact water and nutrients.</p>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-box">
+              <span class="step-num">STEP 04</span>
+              <h4>Optimize & Harvest</h4>
+              <p>Continuous feedback loops improve seasonal yield and maximize profit margins per acre.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Target Market & Business Model -->
+        <div class="market-grid mt-4">
+          <div class="card-glass">
+            <h3 class="card-title">Target Market Strategy</h3>
+            <div class="market-item">
+              <strong>Primary Audience:</strong>
+              <p>Commercial smallholders (1–50 acres), greenhouse hydroponic operators, organic orchards, and high-value berry growers.</p>
+            </div>
+            <div class="market-item mt-2">
+              <strong>Geographic Fit:</strong>
+              <p>Semi-arid regions facing water restrictions, high-cost agricultural zones, and precision export farming.</p>
+            </div>
+          </div>
+
+          <div class="card-glass">
+            <h3 class="card-title">Business Model & Unit Economics</h3>
+            <div class="market-item">
+              <strong>Revenue Streams:</strong>
+              <p>Hardware setup fee (IoT hubs + smart valves) + recurring SaaS subscription for AI analytics, drone flights & automated control.</p>
+            </div>
+            <div class="market-item mt-2">
+              <strong>Payback Period:</strong>
+              <p>Estimated 1.2 years via 40% input savings and 35% yield increase.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>AGRISELF Autonomous AI Micro-Farming System</strong> — Precision Agritech Operating System
+      </div>
+      <div class="footer-links">
+        <span>FastAPI v2.0</span>
+        <span>•</span>
+        <span>Scikit-Learn ML Engines</span>
+        <span>•</span>
+        <span>IoT Edge Gateway Online</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

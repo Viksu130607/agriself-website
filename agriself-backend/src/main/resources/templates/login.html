@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSelf | Enterprise Agricultural Access</title>
+    <link rel="stylesheet" th:href="@{/css/agriself.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            background: radial-gradient(circle at 50% 20%, #152740 0%, #0b131f 70%);
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 2.2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-logo {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+        }
+        .auth-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .auth-sub {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            margin-top: 0.3rem;
+        }
+        .demo-roles-box {
+            margin-top: 1.8rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .demo-role-btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+            font-size: 0.82rem;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .security-badge-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">🌾</div>
+            <h1 class="auth-title">Agri<span>Self</span></h1>
+            <p class="auth-sub">Autonomous AI Precision Agritech Platform</p>
+        </div>
+
+        <!-- Alert messages -->
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${param.registered}" class="alert alert-success">Registration successful! Please log in below.</div>
+
+        <!-- Login Form with CSRF Token -->
+        <form th:action="@{/login}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <div class="form-group">
+                <label class="form-label" for="username">Email Address or Phone Number</label>
+                <input type="text" id="username" name="username" class="form-input" placeholder="e.g. farmer@agriself.com" required autofocus autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem; margin-top: 0.5rem;">
+                Sign In Securely ➔
+            </button>
+        </form>
+
+        <p style="text-align: center; margin-top: 1.2rem; font-size: 0.88rem; color: var(--text-secondary);">
+            New user? <a th:href="@{/register}" style="color: var(--brand-emerald); text-decoration: none; font-weight: 600;">Create Account</a>
+        </p>
+
+        <!-- 1-Click Demo Login Fill -->
+        <div class="demo-roles-box">
+            <p style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 0.6rem; letter-spacing: 0.5px;">
+                🚀 Instant 1-Click Role Login:
+            </p>
+            <button type="button" class="btn btn-outline demo-role-btn" onclick="fillCredentials('farmer@agriself.com', 'Farmer@123')">
+                <span>👨‍🌾 <strong>Farmer Account</strong> (Field Telemetry & AI)</span>
+                <span class="status-pill status-available">Auto-fill</span>
+            </button>
+            <button type="button" class="btn btn-outline demo-role-btn" onclick="fillCredentials('buyer@agriself.com', 'Buyer@123')">
+                <span>💼 <strong>Businessman / Consumer</strong> (Mandi & Sales)</span>
+                <span class="status-pill status-available" style="border-color: var(--accent-gold); color: var(--accent-gold); background: var(--accent-gold-subtle);">Auto-fill</span>
+            </button>
+            <button type="button" class="btn btn-outline demo-role-btn" onclick="fillCredentials('admin@agriself.com', 'Admin@123')">
+                <span>🛡️ <strong>Company Administrator</strong> (Machinery Fleet)</span>
+                <span class="status-pill status-in-use">Auto-fill</span>
+            </button>
+        </div>
+
+        <div class="security-badge-footer">
+            <span>🔒 Protected with Rate Limiting, CSRF, BCrypt & Anti-XSS</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function fillCredentials(user, pass) {
+        document.getElementById('username').value = user;
+        document.getElementById('password').value = pass;
+    }
+</script>
+
+</body>
+</html>

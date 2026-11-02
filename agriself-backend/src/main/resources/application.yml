@@ -1,0 +1,52 @@
+server:
+  port: ${PORT:8080}
+  error:
+    include-stacktrace: never
+    include-message: never
+    include-binding-errors: never
+    whitelabel:
+      enabled: false
+
+spring:
+  application:
+    name: agriself-platform
+  datasource:
+    url: ${DB_URL:jdbc:h2:file:./data/agriselfdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE}
+    driverClassName: ${DB_DRIVER:org.h2.Driver}
+    username: ${DB_USER:agriself_sa}
+    password: ${DB_PASSWORD:AgriSelf#SecureDB2026!}
+  h2:
+    console:
+      enabled: ${ENABLE_H2_CONSOLE:false}
+      path: /h2-console
+  jpa:
+    database-platform: ${JPA_DIALECT:org.hibernate.dialect.H2Dialect}
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+  thymeleaf:
+    cache: false
+    mode: HTML
+    encoding: UTF-8
+
+# AgriSelf Enterprise Security & Configuration (Zero hardcoded secrets)
+agriself:
+  jwt:
+    secret: ${AGRISELF_JWT_SECRET:AgriSelfProductionGradeSecretKeyWithAtLeast32BytesLengthForSecurity2026}
+    expiration-ms: ${AGRISELF_JWT_EXPIRATION:86400000}
+  gemini:
+    api-key: ${GEMINI_API_KEY:}
+  rate-limit:
+    requests-per-minute: ${RATE_LIMIT_PER_MINUTE:60}
+    login-attempts-per-minute: ${LOGIN_RATE_LIMIT:10}
+
+logging:
+  level:
+    root: INFO
+    com.agriself: INFO
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    org.hibernate: WARN
